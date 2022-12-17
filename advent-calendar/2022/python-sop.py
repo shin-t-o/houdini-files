@@ -90,36 +90,41 @@ def get_node_name_from_sop_list(sop_list: list[hou.SopNode]) -> list[str]:
 # -------------------------------------------------
 # 設定部分
 # -------------------------------------------------
-# 調査したい範囲の親ノードを定義
-settings: dict = {
-    # "root_dir": "/obj/WORK/",
-    # 探したいattributeを定義
-    "target_attr": "pAttr",
-    # ノードの何番目までを調べるか
-    # "search_index_num": 1,
-}
+# scope: str = "upstream_only"
+scope: str = "current_dir"
+# 探したいattributeを定義
+target_attr: str = "pAttr"
+
 
 # -------------------------------------------------
 # 実行部分
 # -------------------------------------------------
-# 別にmainで括る必要もないのだが見栄え的に
-def main(settings: dict):
-    # 繋いだノードの「子孫（＝上流ノード）」を候補として取得
-    # base_sop: list[hou.SopNode] = hou.pwd().inputAncestors()
+def exec_search(scope: str, target_attribute: str):
+    # 既存のTemplateフラグを除去
     parent_dir: str = hou.pwd().path().replace("/" + hou.pwd().name(), "")
-    base_sop: list[hou.SopNode] = hou.node(parent_dir).children()
+    current_sop: list[hou.SopNode] = hou.node(parent_dir).children()
+    for sop in current_sop:
+        sop.setTemplateFlag(False)
+
+    if scope == "upstream_only":
+        # 繋いだノードの「子孫（＝上流ノード）」を候補として取得
+        base_sop: list[hou.SopNode] = hou.pwd().inputAncestors()
+    elif scope == "current_dir":
+        base_sop: list[hou.SopNode] = current_sop
+
     # 指定の条件でfilter処理を実行
-    source_sop = filter_nodes_by_attribute(source_sop=base_sop, attr=settings["target_attr"])
-    # result_sop = filter_nodes_by_input(source_sop=source_sop, attr=settings["target_attr"])
-    result_sop = source_sop
+    result_sop = filter_nodes_by_attribute(source_sop=base_sop, attr=target_attribute)
 
-    print(" ============================= ")
+    # print(" ============================= ")
     # [1] 候補を出力したい場合はこっち
-    print("result_sop: ", get_node_name_from_sop_list(sop_list=result_sop))
+    # print("result_sop: ", get_node_name_from_sop_list(sop_list=result_sop))
     # [2] 候補となるノードを選択状態 + Template Flag ONにしたい場合はこっち
-    for sop in result_sop:
-        sop.setSelected(True)
-        sop.setTemplateFlag(True)
+    if len(result_sop) == 0:
+        print("Node not found.")
+    else:
+        for sop in result_sop:
+            sop.setSelected(True)
+            sop.setTemplateFlag(True)
 
 
-main(settings=settings)
+exec_search(scope=scope, target_attribute=target_attr)
