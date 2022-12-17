@@ -1,4 +1,7 @@
 def has_attrib(geo: hou.Geometry, attr: str) -> bool:
+    """
+    ジオメトリの指定attribute保持有無を返却
+    """
     return not (
         (geo.findPointAttrib(attr) is None)
         & (geo.findVertexAttrib(attr) is None)
@@ -52,33 +55,10 @@ def remove_downstream_nodes(source_sop: list[hou.SopNode]) -> list[hou.SopNode]:
     return filtered_sop
 
 
-def filter_nodes_by_input(source_sop: list[hou.SopNode], attr: str) -> list[hou.SopNode]:
-    """
-    SopNodeリストの中で「そのinputがtarget_attrを持たないノード」のみを抽出する
-
-    Args:
-        source_sop: 元となるSopNodeリスト
-
-    Returns:
-
-    """
-    filtered_sop: list[hou.SopNode] = []
-
-    for sop in source_sop:
-        # try:
-        inputs: list[hou.SopNode] = list(sop.inputs())
-        for input in inputs:
-            if attr not in get_attr_list(input.geometry()):
-                filtered_sop.append(sop)
-                break
-        #
-        # except AttributeError:
-        #     continue
-
-    return filtered_sop
-
-
 def get_node_name_from_sop_list(sop_list: list[hou.SopNode]) -> list[str]:
+    """
+    SopNodeリストを受け取り、その名称（str）のリストにして返却
+    """
     result: list[str] = []
 
     for sop in sop_list:
