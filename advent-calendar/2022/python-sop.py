@@ -1,20 +1,10 @@
-def get_attr_list(geo: hou.Geometry) -> list[str]:
-    """
-    geoが含むattributeをリスト化して返却
-
-    Args:
-        geo: attribute取得対象Geometry
-
-    Returns:
-        attr_list: geoが保持しているattribute一覧(point/prim/detail)リスト
-    """
-    attr_list: list = []
-
-    attr_list.extend([x.name() for x in geo.pointAttribs()])
-    attr_list.extend([x.name() for x in geo.primAttribs()])
-    attr_list.extend([x.name() for x in geo.globalAttribs()])
-
-    return attr_list
+def has_attrib(geo: hou.Geometry, attr: str) -> bool:
+    return not (
+        (geo.findPointAttrib(attr) is None)
+        & (geo.findVertexAttrib(attr) is None)
+        & (geo.findPrimAttrib(attr) is None)
+        & (geo.findGlobalAttrib(attr) is None)
+    )
 
 
 def filter_nodes_by_attribute(source_sop: list[hou.SopNode], attr: str) -> list[str]:
@@ -29,17 +19,9 @@ def filter_nodes_by_attribute(source_sop: list[hou.SopNode], attr: str) -> list[
         filtered_sop: 抽出後のノード名リスト
     """
     filtered_sop: list[hou.SopNode] = []
-
     for source in source_sop:
         try:
-            # geo: hou.Geometry = hou.node(dir + source.name()).geometry()
-            # attr_list = get_attr_list(geo)
-            # hou.SopNode.geometry == hou.Geometry
-            attr_list = get_attr_list(source.geometry())
-            if attr in attr_list:
-                # list[str]
-                # source_geo.append(source.name())
-                # list[hou.SopNode]
+            if has_attrib(source.geometry(), attr):
                 filtered_sop.append(source)
         except AttributeError:
             continue
