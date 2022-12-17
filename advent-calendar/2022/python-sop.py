@@ -26,10 +26,7 @@ def filter_nodes_by_attribute(source_sop: list[hou.SopNode], attr: str) -> list[
         except AttributeError:
             continue
 
-    # こっちの名前のがいいかもしれん
-    # return source_sop
     return remove_downstream_nodes(filtered_sop)
-    # return [ x.name() for x in geo_list if x.name() not in source_candidate ]
 
 
 def remove_downstream_nodes(source_sop: list[hou.SopNode]) -> list[hou.SopNode]:
@@ -49,10 +46,7 @@ def remove_downstream_nodes(source_sop: list[hou.SopNode]) -> list[hou.SopNode]:
 
     for sop in source_sop:
         input_list: list[str] = [x.name() for x in sop.inputs()]
-        # sopノードのinputもsource_sopノード群にいる = 除外対象
-        #  / sopノードのinputがsource_sopノード群に居ない = 抽出対象
-        # if not (set(input_list) - set(["object_merge"])) & set(source_list):
-        if not (set(input_list)) & set(source_list):
+        if not set(input_list) & set(source_list):
             filtered_sop.append(sop)
 
     return filtered_sop
