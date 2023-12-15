@@ -1,0 +1,5 @@
+*.ipynb
+bug_fix*
+docs*
+sop*
+*.txt
