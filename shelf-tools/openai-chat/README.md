@@ -10,7 +10,7 @@ https://openai.com/api/
 
 
 ### image
-![](../../image/2022-12-17-19-40-21.png)
+![](../../image/202212171940.png)
 
 ### ref
 https://www.sidefx.com/docs/houdini/hom/cb/qt.html
